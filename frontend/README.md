@@ -51,7 +51,7 @@ All network calls are in `src/api/client.ts`. Data shapes are in `src/types.ts`.
 Notes for the backend:
 
 - `Scan.status` is one of `queued`, `cloning`, `analyzing`, `completed`, `failed`. Set `error` when it fails.
-- `Scan.stepIndex` (0–4) picks the active step in the progress list. If it is missing, the UI works it out from `progress`.
+- `Scan.stepIndex` (0–3) picks the active step in the progress list (`src/lib/scanSteps.ts`). If it is missing, the UI works it out from `progress`.
 - `Finding.summary`, `explanation`, and `fixExplanation` are shown to beginners as "What's wrong", "Why it matters", and "How to fix it". Keep them short and plain.
 - `Finding.evidence` and `suggestedFix` are code snippets that both start at `evidenceStartLine`. `line` is the line to highlight.
 - `language` and `confidence` (0–1) are optional.
