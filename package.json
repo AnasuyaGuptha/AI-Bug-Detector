@@ -1,0 +1,25 @@
+{
+  "name": "repobug-ai",
+  "version": "1.0.0",
+  "description": "RepoBug AI - scans public GitHub repositories and prepares source code for AI bug detection",
+  "type": "module",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "dev": "nodemon backend/src/server.js",
+    "test": "node --test \"backend/tests/*.test.js\""
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^2.28.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

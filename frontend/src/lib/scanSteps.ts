@@ -1,11 +1,11 @@
 import type { Scan } from '../types'
 
+// These match the backend's real pipeline. The backend sets Scan.stepIndex to one of these indexes.
 export const SCAN_STEPS = [
-  { label: 'Cloning repository', detail: 'Fetching the default branch' },
-  { label: 'Indexing files', detail: 'Finding source files and languages' },
-  { label: 'Running static checks', detail: 'Looking for common bug patterns' },
-  { label: 'AI code review', detail: 'Reading code for logic and security issues' },
-  { label: 'Ranking findings', detail: 'Sorting by severity and writing fixes' },
+  { label: 'Fetching repository', detail: 'Reading the default branch from GitHub' },
+  { label: 'Indexing files', detail: 'Picking and downloading the source files' },
+  { label: 'AI code review', detail: 'Gemma 4 reads the code for logic and security issues' },
+  { label: 'Checking findings', detail: 'Matching each finding to the real code and ranking by severity' },
 ] as const
 
 /** Which step is running. Uses the backend value when present. */
