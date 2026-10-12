@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Charcoal surfaces, darkest to lightest */
+  --color-bg: #111114;
+  --color-surface: #17171c;
+  --color-raised: #1e1e24;
+  --color-hover: #24242b;
+  --color-line: #26262e;
+  --color-line-strong: #34343e;
+
+  /* Off-white text */
+  --color-fg: #ecebf2;
+  --color-muted: #a1a0b0;
+  --color-faint: #6f6e7e;
+
+  /* Lavender accent */
+  --color-accent: #b8a6f7;
+  --color-accent-strong: #a593f0;
+  --color-accent-soft: #b8a6f714;
+
+  /* Pastel severity colours */
+  --color-sev-critical: #f2a7b8;
+  --color-sev-high: #f4c19f;
+  --color-sev-medium: #eedd9f;
+  --color-sev-low: #a7d9c1;
+  --color-sev-info: #a9c4ec;
+
+  /* Diff colours */
+  --color-add: #a7d9c1;
+  --color-del: #f2a7b8;
+
+  --animate-fade-in: fade-in 0.35s ease-out both;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  input:focus-visible,
+  select:focus-visible {
+    outline: none;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+
+  kbd {
+    @apply inline-flex min-w-5 items-center justify-center rounded border border-line-strong bg-raised px-1 font-mono text-[11px] text-muted;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-surface;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line-strong bg-raised px-3.5 py-2 text-sm font-medium text-fg transition-colors hover:bg-hover disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-muted transition-colors hover:bg-raised hover:text-fg disabled:pointer-events-none disabled:opacity-40;
+  }
+
+  .eyebrow {
+    @apply text-xs font-medium uppercase tracking-[0.08em] text-faint;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
