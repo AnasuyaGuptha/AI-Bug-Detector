@@ -42,6 +42,23 @@ test('recovers complete findings from truncated output', () => {
   assert.equal(spaced.findings.length, 1);
 });
 
+test('repairs unquoted enum values and trailing commas (seen in real Gemma output)', () => {
+  // Real example: Gemma 4 wrote "severity":high without quotes.
+  const r = parseModelOutput('```json\n{"findings":[{"filePath":"a.js","startLine":1,"title":"t","severity":high,"category":security,"confidence":0.6}]}\n```');
+  assert.equal(r.ok, true);
+  assert.equal(r.findings[0].severity, 'high');
+  assert.equal(r.findings[0].category, 'security');
+
+  const commas = parseModelOutput('{"findings":[{"filePath":"a.js","startLine":1,"title":"t",},]}');
+  assert.equal(commas.ok, true);
+  assert.equal(commas.findings.length, 1);
+});
+
+test('repair only runs when needed and leaves string contents alone', () => {
+  const text = '{"findings":[{"filePath":"a.js","startLine":1,"title":"uses \\"severity\\":high in a string"}]}';
+  assert.equal(parseModelOutput(text).findings[0].title, 'uses "severity":high in a string');
+});
+
 test('rejects empty, non-JSON and wrongly shaped output', () => {
   assert.equal(parseModelOutput('').ok, false);
   assert.equal(parseModelOutput(undefined).ok, false);

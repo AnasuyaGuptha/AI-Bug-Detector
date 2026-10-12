@@ -4,8 +4,9 @@
  * checks every finding afterwards.
  *
  * Handles: plain JSON, JSON in ```json fences, text before/after the JSON,
- * a bare array instead of {"findings": [...]}, and truncated output (complete
- * findings are recovered, the cut-off one is dropped).
+ * a bare array instead of {"findings": [...]}, truncated output (complete
+ * findings are recovered, the cut-off one is dropped), and two small slips
+ * Gemma makes: unquoted enum values ("severity":high) and trailing commas.
  *
  * @param {string} text
  * @returns {{ ok: true, findings: unknown[], recovered: boolean } | { ok: false, reason: string }}
@@ -16,7 +17,26 @@ export function parseModelOutput(text) {
   }
 
   const cleaned = text.replace(/^﻿/, '').trim();
+  const result = parseCleaned(cleaned);
+  if (result.ok) return result;
 
+  // Only if normal parsing failed: repair the known slips and try again.
+  const repaired = repairJson(cleaned);
+  return repaired === cleaned ? result : parseCleaned(repaired);
+}
+
+/**
+ * Fixes two mistakes seen in Gemma 4 answers:
+ * - a bare word for an enum field: "severity":high  ->  "severity":"high"
+ * - a trailing comma before } or ]:  {"a":1,}  ->  {"a":1}
+ */
+export function repairJson(text) {
+  return text
+    .replace(/("(?:severity|category|status)"\s*:\s*)([A-Za-z][\w-]*)(\s*[,}])/g, '$1"$2"$3')
+    .replace(/,(\s*[}\]])/g, '$1');
+}
+
+function parseCleaned(cleaned) {
   // 1. Whole answer, or the inside of a Markdown code fence.
   const fence = cleaned.match(/```(?:json)?\s*([\s\S]*?)```/i);
   for (const candidate of [cleaned, fence?.[1]]) {

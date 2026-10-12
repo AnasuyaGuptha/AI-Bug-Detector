@@ -90,7 +90,7 @@ const pieceList = (pieces) => pieces.map(pieceName).join(', ');
  * Sends one batch to the model and parses the answer. Waits for the token budget first,
  * and retries when the API asks to wait a short time. Never throws: returns raw findings or an error.
  */
-async function analyzeBatch(batch, { generate, limiter }) {
+async function analyzeBatch(batch, { generate, limiter, retriedInvalidOutput = false }) {
   const prompt = buildBugAnalysisPrompt(batch);
   const tokens = estimateTokens(prompt) + PROMPT_OVERHEAD_TOKENS;
 
@@ -116,6 +116,11 @@ async function analyzeBatch(batch, { generate, limiter }) {
 
   const parsed = parseModelOutput(answer.text);
   if (!parsed.ok) {
+    // Gemma is not deterministic: the same batch usually works on a second try.
+    if (!retriedInvalidOutput) {
+      log(`${label}: unusable output (${parsed.reason}), trying once more`);
+      return analyzeBatch(batch, { generate, limiter, retriedInvalidOutput: true });
+    }
     return {
       ok: false,
       error: new AppError(502, 'AI_INVALID_OUTPUT', `The AI model returned output that could not be used (${parsed.reason}).`),
